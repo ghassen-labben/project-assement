@@ -1,0 +1,132 @@
+<div class="container mx-auto px-4 py-8" *ngIf="product">
+    <div class="flex flex-col md:flex-row">
+      <!-- Product Image -->
+      <div class="md:w-1/3 mb-8 md:mb-0">
+        <img [src]="product.imageUrl" [alt]="product.name" class="w-full h-auto object-cover rounded-lg shadow-lg">
+      </div>
+  
+      <!-- Product Details -->
+      <div class="md:w-1/2 md:pl-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ product.name }}</h1>
+        
+        <div class="flex items-center mb-4">
+          <div class="flex text-yellow-400">
+            <ng-container *ngFor="let star of [1,2,3,4,5]">
+              <svg class="w-5 h-5 fill-current" [class.text-gray-300]="star > getAverageRating(product)" viewBox="0 0 24 24">
+                <path d="M12 .587l3.668 7.568L24 9.75l-6 5.844 1.417 8.516L12 18.902l-7.417 3.208L6 15.594 0 9.75l8.332-1.595z"/>
+              </svg>
+            </ng-container>
+          </div>
+          <span class="text-gray-600 ml-2">{{ getAverageRating(product) | number:'1.1-1' }} ({{ product.reviews?.length || 0 }} reviews)</span>
+        </div>
+  
+        <p class="text-3xl font-bold text-teal-600 mb-4">${{ product.price.toFixed(2) }}</p>
+  
+        <!-- Add Review Form -->
+        <div class="mt-8">
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Add Your Review</h2>
+          <form [formGroup]="reviewForm" (ngSubmit)="onSubmitReview()" class="bg-white rounded-lg shadow-md p-4">
+            <div class="mb-3">
+              <label for="rating" class="block text-gray-700 font-bold mb-2">Rating</label>
+              <select id="rating" formControlName="rating" class="w-full px-3 py-2 border rounded-md">
+                <option value="">Select a rating</option>
+                <option value="1">1 Star</option>
+                <option value="2">2 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="5">5 Stars</option>
+              </select>
+              <div *ngIf="reviewForm.get('rating')?.invalid && (reviewForm.get('rating')?.dirty || reviewForm.get('rating')?.touched)" class="text-red-500 mt-1">
+                <div *ngIf="reviewForm.get('rating')?.errors?.['required']">Rating is required.</div>
+                <div *ngIf="reviewForm.get('rating')?.errors?.['min'] || reviewForm.get('rating')?.errors?.['max']">Rating must be between 1 and 5.</div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="reviewSnippet" class="block text-gray-700 font-bold mb-2">Review</label>
+              <textarea id="reviewSnippet" formControlName="reviewSnippet" rows="3" class="w-full px-3 py-2 border rounded-md"></textarea>
+              <div *ngIf="reviewForm.get('reviewSnippet')?.invalid && (reviewForm.get('reviewSnippet')?.dirty || reviewForm.get('reviewSnippet')?.touched)" class="text-red-500 mt-1">
+                <div *ngIf="reviewForm.get('reviewSnippet')?.errors?.['required']">Review is required.</div>
+                <div *ngIf="reviewForm.get('reviewSnippet')?.errors?.['minlength']">Review must be at least 10 characters long.</div>
+              </div>
+            </div>
+            <button type="submit" [disabled]="!reviewForm.valid" class="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+              Submit Review
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Featured Reviews Section -->
+    <div class="mt-16">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Featured Reviews</h2>
+        
+        <div *ngIf="product.reviews && product.reviews.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-white rounded-lg shadow-md p-6" *ngFor="let review of product.reviews">
+            <div class="flex items-center mb-4">
+              <img src="https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1721001600&semt=ais_user" alt="ghassen labben" class="w-12 h-12 rounded-full mr-4">
+              <div>
+                <h3 class="font-semibold text-lg">Ghassen Labben</h3>
+                <div class="flex text-yellow-400">
+                  <ng-container *ngFor="let star of [1,2,3,4,5]">
+                    <svg class="w-4 h-4 fill-current" [class.text-gray-300]="star > review.rating" viewBox="0 0 24 24">
+                      <path d="M12 .587l3.668 7.568L24 9.75l-6 5.844 1.417 8.516L12 18.902l-7.417 3.208L6 15.594 0 9.75l8.332-1.595z"/>
+                    </svg>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <p class="text-gray-700 mb-2">{{ review.reviewSnippet }}</p>
+            <div class="text-gray-500 text-sm">
+              <p>Created: {{ review.regdate | date:'medium' }}</p>
+              <p>Last Updated: {{ review.updatedate | date:'medium' }}</p>
+            </div>
+            
+            <!-- Update and Delete buttons -->
+            <div class="mt-4 flex justify-end space-x-2">
+              <button (click)="editReview(review)" class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition">
+                Edit
+              </button>
+              <button (click)="deleteReview(review.id)" class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition">
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+    
+        <div class="mt-8 text-center">
+          <a href="#" class="text-teal-600 hover:text-teal-700 font-medium">See all reviews</a>
+        </div>
+      </div>
+    
+      <!-- Edit Review Modal -->
+      <div *ngIf="isEditModalOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+          <h2 class="text-2xl font-bold mb-4">Edit Review</h2>
+          <form [formGroup]="editReviewForm" (ngSubmit)="onSubmitEditReview()">
+            <div class="mb-4">
+              <label for="editRating" class="block text-gray-700 font-bold mb-2">Rating</label>
+              <select id="editRating" formControlName="rating" class="w-full px-3 py-2 border rounded-md">
+                <option value="1">1 Star</option>
+                <option value="2">2 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="5">5 Stars</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label for="editReviewSnippet" class="block text-gray-700 font-bold mb-2">Review</label>
+              <textarea id="editReviewSnippet" formControlName="reviewSnippet" rows="3" class="w-full px-3 py-2 border rounded-md"></textarea>
+            </div>
+            <div class="flex justify-end space-x-2">
+              <button type="button" (click)="closeEditModal()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition">
+                Cancel
+              </button>
+              <button type="submit" [disabled]="!editReviewForm.valid" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                Update Review
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+  </div>

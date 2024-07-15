@@ -1,0 +1,113 @@
+<header class="bg-white bg-image">
+  <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between">
+      <div class="flex items-center">
+        <a class="block text-teal-600" href="#">
+          <span class="sr-only">Home</span>
+          <svg class="h-8" viewBox="0 0 28 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- SVG path remains unchanged -->
+          </svg>
+        </a>
+      </div>
+
+      <div class="hidden md:block">
+        <nav aria-label="Global">
+          <ul class="flex items-center gap-6 text-sm">
+            <li><a class="text-gray-500 transition hover:text-gray-500/75" routerLink="/">Home</a></li>
+            <li><a class="text-gray-500 transition hover:text-gray-500/75" routerLink="/latest-ratings">Latest Ratings</a></li>
+            <li><a class="text-gray-500 transition hover:text-gray-500/75" href="#">About US</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="sm:flex sm:gap-4">
+          <a class="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow" href="#">Login</a>
+          <a class="hidden rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-teal-600 sm:block" href="#">Register</a>
+        </div>
+
+        <div class="block md:hidden">
+          <button class="rounded bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75" (click)="toggleMobileMenu()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="md:hidden" [ngClass]="{'hidden': !isMobileMenuOpen}">
+    <nav aria-label="Global" class="px-4 py-2 bg-white">
+      <ul class="flex flex-col items-start gap-4 text-sm">
+        <li><a class="text-gray-500 transition hover:text-gray-500/75" routerLink="/">Home</a></li>
+        <li><a class="text-gray-500 transition hover:text-gray-500/75" routerLink="/latest-ratings">Latest Ratings</a></li>
+        <li><a class="text-gray-500 transition hover:text-gray-500/75" href="#">About US</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="container mx-auto px-4 py-8 lg:px-8">
+  <div class="flex flex-col lg:flex-row">
+    <!-- Left sidebar for filtering -->
+    <div class="w-full lg:w-1/4 pr-0 lg:pr-4 mb-6 lg:mb-0">
+      <h2 class="text-lg font-semibold mb-4">Filters</h2>
+      <div class="mb-4">
+        <div class="space-y-2">
+          <label
+            for="Option1"
+            class="flex cursor-pointer items-start gap-4 rounded-lg border border-gray-200 p-4 transition hover:bg-gray-50 has-[:checked]:bg-blue-50"
+          >
+            <div class="flex items-center">
+              <input type="checkbox" class="size-4 rounded border-gray-300" id="topRated" [(ngModel)]="topRated" (change)="filterTopRated()" />
+            </div>
+    
+            <div>
+              <strong class="font-medium text-gray-900">Top Rated</strong>
+              <p class="mt-1 text-pretty text-sm text-gray-700">
+                Top rated products overall
+              </p>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Right side for product grid -->
+    <div class="w-full lg:w-3/4">
+      <h2 class="text-2xl font-semibold mb-6">Products</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Product card -->
+        <a [routerLink]="['/product', p.id]" *ngFor="let p of allProducts" class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full transition-transform hover:scale-105">
+          <div class="relative pb-[75%] overflow-hidden">
+            <img [src]="p.imageUrl" [alt]="p.name" class="absolute top-0 left-0 w-full h-full object-cover">
+          </div>
+          <div class="p-4 flex-grow flex flex-col justify-between">
+            <div>
+              <h3 class="font-semibold text-lg mb-2 line-clamp-2">{{ p.name }}</h3>
+              <div class="flex items-center mb-2">
+                <div class="flex text-yellow-500">
+                  <ng-container *ngFor="let star of getStarArray(getAverageRating(p))">
+                    <svg *ngIf="star === 'full'" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M12 .587l3.668 7.568L24 9.75l-6 5.844 1.417 8.516L12 18.902l-7.417 3.208L6 15.594 0 9.75l8.332-1.595z"/>
+                    </svg>
+                    <svg *ngIf="star === 'half'" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M12 .587l3.668 7.568L24 9.75l-6 5.844 1.417 8.516L12 18.902V.587z"/>
+                    </svg>
+                    <svg *ngIf="star === 'empty'" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M12 .587l3.668 7.568L24 9.75l-6 5.844 1.417 8.516L12 18.902l-7.417 3.208L6 15.594 0 9.75l8.332-1.595L12 .587zM12 2.736l-3.223 6.642-.366.755-.833.121-7.313 1.398 5.334 5.192.641.623-.151.885-1.29 7.689 6.9-3.212.752-.35.752.35 6.9 3.212-1.29-7.689-.151-.885.641-.623 5.334-5.192-7.313-1.398-.833-.121-.366-.755L12 2.736z"/>
+                    </svg>
+                  </ng-container>
+                </div>
+                <span class="text-gray-600 ml-2">{{ getAverageRating(p) }}</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</main>

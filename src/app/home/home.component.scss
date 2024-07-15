@@ -1,0 +1,46 @@
+.bg-image {
+  background-image: url('https://scottishgrocer.co.uk/wp-content/uploads/2023/03/product-of-the-year.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 50vh;
+  color: white !important;
+  position: relative;
+}
+
+/* Add a pseudo-element for a dark overlay */
+.bg-image::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Ensure content is above the overlay */
+.bg-image > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Media queries for responsive adjustments */
+@media (min-width: 640px) {
+  .bg-image {
+    height: 60vh;
+  }
+}
+
+@media (min-width: 768px) {
+  .bg-image {
+    height: 70vh;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bg-image {
+    height: 80vh;
+    background-size: contain;
+    background-position: top;
+  }
+}
